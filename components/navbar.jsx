@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 
-export default function Home() {
+export default function NavBar() {
   return (
-    <View>
-      <Text>Home</Text>
-    </View>
+	<View>
+	  <Text>NavBar</Text>
+	</View>
   )
 }
 
