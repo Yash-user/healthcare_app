@@ -53,10 +53,15 @@ export default function Login() {
 
       {/* Sign up */}
       <View style={styles.signupContainer}>
-        <Text>Don't have an account?</Text>
-        <TouchableOpacity>
-          <Text style={styles.signupText}> Sign up</Text>
-        </TouchableOpacity>
+        <Text style={styles.signupTextLine}>Don't have an account?</Text>
+        <View style={styles.signupButtonsRow}>
+          <TouchableOpacity>
+            <Text style={styles.signupLink}>Sign up as a PATIENT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.signupLink}>Sign up as a DOCTOR</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -127,12 +132,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signupContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  signupTextLine: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  signupButtonsRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 15,
   },
-  signupText: {
-    color: "#6C63FF",
-    fontWeight: "bold",
+  signupLink: {
+    fontSize: 14,
+    color: "#6C63FF", // purple
+    marginHorizontal: 10,
+    textAlign: "center",
   },
 });
