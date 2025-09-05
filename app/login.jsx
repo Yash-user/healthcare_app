@@ -9,7 +9,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>LOGIN PAGE</Text>
+      <Text style={styles.title}>WELCOME TO </Text>
       <Text style={styles.subtitle}>Use credentials to access your account</Text>
 
       {/* Username */}
@@ -45,11 +45,11 @@ export default function Login() {
         <Text style={styles.socialText}>Sign in with Google</Text>
       </TouchableOpacity>
 
-      {/* Apple Sign in */}
+      {/* Apple Sign in
       <TouchableOpacity style={styles.socialBtn}>
         <FontAwesome name="apple" size={20} color="black" />
         <Text style={styles.socialText}>Sign in with Apple</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Sign up */}
       <View style={styles.signupContainer}>
