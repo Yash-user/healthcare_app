@@ -71,11 +71,7 @@ export default function Login() {
     <View style={styles.container}>
       <Text style={styles.title}>WELCOME TO VEDA HUB!</Text>
       <Text style={styles.subtitle}>Use credentials to access your account</Text>
-      <Text style={styles.title}>LOGIN PAGE</Text>
-      <Text style={styles.subtitle}>
-        Use credentials to access your account
-      </Text>
-
+      
       {/* Email */}
       <TextInput
         placeholder="Enter Email"
