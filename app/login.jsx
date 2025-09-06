@@ -1,30 +1,96 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { AntDesign } from "@expo/vector-icons"; 
+import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { useSignIn, useOAuth } from "@clerk/clerk-expo";
 
 export default function Login() {
   const router = useRouter();
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const { startOAuthFlow: googleOAuth } = useOAuth({
+    strategy: "oauth_google",
+  });
+  const { startOAuthFlow: appleOAuth } = useOAuth({ strategy: "oauth_apple" });
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    if (!isLoaded) return;
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: email,
+        password,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.push("/home");
+      } else {
+        Alert.alert("Error", "Login failed. Please try again.");
+      }
+    } catch (err) {
+      Alert.alert("Error", err.errors?.[0]?.message || "Login failed");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { createdSessionId, setActive } = await googleOAuth();
+      if (createdSessionId) {
+        setActive({ session: createdSessionId });
+        router.push("/home");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Google sign-in failed");
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const { createdSessionId, setActive } = await appleOAuth();
+      if (createdSessionId) {
+        setActive({ session: createdSessionId });
+        router.push("/home");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Apple sign-in failed");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>WELCOME TO VEDA HUB!</Text>
       <Text style={styles.subtitle}>Use credentials to access your account</Text>
-
-      {/* Username */}
-      <TextInput 
-        placeholder="Enter Username" 
-        style={styles.input} 
+      
+      {/* Email */}
+      <TextInput
+        placeholder="Enter Email"
+        style={styles.input}
         placeholderTextColor="#888"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       {/* Password */}
-      <TextInput 
-        placeholder="Enter Password" 
-        secureTextEntry 
-        style={styles.input} 
+      <TextInput
+        placeholder="Enter Password"
+        secureTextEntry
+        style={styles.input}
         placeholderTextColor="#888"
+        value={password}
+        onChangeText={setPassword}
       />
 
       {/* Forgot Password */}
@@ -33,20 +99,20 @@ export default function Login() {
       </TouchableOpacity>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.loginBtn} onPress={() => router.push("/home")}>
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginText}>Log in</Text>
       </TouchableOpacity>
 
       <Text style={styles.or}>OR</Text>
 
       {/* Google Sign in */}
-      <TouchableOpacity style={styles.socialBtn}>
+      <TouchableOpacity style={styles.socialBtn} onPress={handleGoogleSignIn}>
         <AntDesign name="google" size={20} color="black" />
         <Text style={styles.socialText}>Sign in with Google</Text>
       </TouchableOpacity>
 
       {/* Apple Sign in */}
-      <TouchableOpacity style={styles.socialBtn}>
+      <TouchableOpacity style={styles.socialBtn} onPress={handleAppleSignIn}>
         <FontAwesome name="apple" size={20} color="black" />
         <Text style={styles.socialText}>Sign in with Apple</Text>
       </TouchableOpacity>
