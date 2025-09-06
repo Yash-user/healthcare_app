@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 
 // Sample doctors data
 const doctors = [
@@ -28,18 +29,35 @@ const doctors = [
 ];
 
 export default function Cards() {
+  const router = useRouter();
+
+  const handleCardPress = (doctor) => {
+    router.push({
+      pathname: '/DoctorDetails',
+      params: { 
+        doctorId: doctor.id,
+        name: doctor.name,
+        specialty: doctor.specialty,
+        rating: doctor.rating,
+        image: doctor.image,
+      }
+    });
+  };
+
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.info}>
-        <View style={styles.ratingRow}>
-          <Icon name="star" size={14} color="#FFD700" />
-          <Text style={styles.rating}>{item.rating}</Text>
+    <TouchableOpacity onPress={() => handleCardPress(item)}>
+      <View style={styles.card}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.info}>
+          <View style={styles.ratingRow}>
+            <Icon name="star" size={14} color="#FFD700" />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.specialty}>{item.specialty}</Text>
         </View>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.specialty}>{item.specialty}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
