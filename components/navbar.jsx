@@ -8,9 +8,12 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const tabs = [
-    { name: "Home", icon: "home-outline", route: "/home" },
-    { name: "Calendar", icon: "calendar-outline", route: "/Calendar" },
-    { name: "Profile", icon: "person-outline", route: "/profile" },
+    {icon: "home-outline", route: "/home" },
+    {icon: "calendar-outline", route: "/Calendar" },
+    {icon: "add-circle-outline", route: "/reportupload" },
+    {icon: "pie-chart", route: "/progress" },
+    {icon: "person-outline", route: "/profile" },
+
   ];
 
   return (
@@ -25,12 +28,10 @@ export default function Navbar() {
           >
             <Icon
               name={tab.icon}
-              size={24}
+              size={28}
               color={isActive ? "#007AFF" : "gray"}
             />
-            <Text
-              style={[styles.tabText, { color: isActive ? "#007AFF" : "gray" }]}
-            >
+            <Text style={[styles.tabText, { color: isActive ? "#007AFF" : "gray" }]}>
               {tab.name}
             </Text>
           </TouchableOpacity>
@@ -44,8 +45,8 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: "row",
     backgroundColor: "white",
-    paddingVertical: 10,
-    paddingBottom: 20,
+    paddingVertical: 14,
+    paddingBottom: 8,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
     justifyContent: "space-around",
