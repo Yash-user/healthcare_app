@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
 import Events from "../components/Events"
 import SelfCareCard from "../components/SelfCareCard";
+import ChatButton from "../components/ChatButton";
 
 export default function Home() {
   const { user } = useUser();
@@ -23,7 +24,8 @@ export default function Home() {
         <Text style={styles.welcome}>
           Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!
         </Text>
-        {/*chat-icon*/}
+        {/*chat*/}
+        <ChatButton />
       </View>
 
       <Events />
