@@ -4,6 +4,7 @@ import { useUser, useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
 import Events from "../components/Events"
+import SelfCareCard from "../components/SelfCareCard";
 
 export default function Home() {
   const { user } = useUser();
@@ -22,17 +23,13 @@ export default function Home() {
         <Text style={styles.welcome}>
           Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!
         </Text>
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        {/*chat-icon*/}
       </View>
 
-      {/* Main content */}
-      <View style={styles.main}>
-        <Events />
-      </View>
-      {/* Cards Section at the bottom */}
+      <Events />
+      <SelfCareCard/>
       <Cards />
+
     </View>
   );
 }
