@@ -1,4 +1,4 @@
-// components/ProfileHeader.jsx
+// app/components/ProfileHeader.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -8,57 +8,34 @@ import {
   Modal,
   Pressable,
   StyleSheet,
+  Platform,
 } from "react-native";
 
-export default function ProfileHeader({ user, onSettings = () => {}, onLogout = () => {} }) {
+export default function ProfileHeader({ user = {}, onSettings = () => {}, onLogout = () => {} }) {
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
-
-  const handleSettings = () => {
-    closeMenu();
-    onSettings();
-  };
-
-  const handleLogout = () => {
-    closeMenu();
-    onLogout();
-  };
-
   return (
-    <View style={styles.header}>
-      {/* three-dots button (top-right) */}
-      <View style={styles.menuButtonWrap}>
-        <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
+    <View style={styles.container}>
+      <View style={styles.topRight}>
+        <TouchableOpacity onPress={() => setMenuVisible(true)} style={styles.menuButton}>
           <Text style={styles.menuDots}>⋯</Text>
         </TouchableOpacity>
       </View>
 
-      <Image source={{ uri: user?.avatar }} style={styles.avatar} />
-      <Text style={styles.name}>{user?.name}</Text>
-      {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
-      {user?.private?.address ? (
-        <Text style={styles.info}>📍 {user.address}</Text>
-      ) : null}
-      {user?.private?.contact ? (
-        <Text style={styles.info}>📞 {user.contact}</Text>
-      ) : null}
+      <Image source={{ uri: user.avatar || "https://i.pravatar.cc/150" }} style={styles.avatar} />
+      <Text style={styles.name}>{user.name}</Text>
+      {user.email ? <Text style={styles.sub}>{user.email}</Text> : null}
+      {user.address ? <Text style={styles.meta}>📍 {user.address}</Text> : null}
+      {user.contact ? <Text style={styles.meta}>📞 {user.contact}</Text> : null}
 
-      <Modal
-        transparent
-        visible={menuVisible}
-        animationType="fade"
-        onRequestClose={closeMenu}
-      >
-        <Pressable style={styles.backdrop} onPress={closeMenu}>
+      <Modal transparent visible={menuVisible} animationType="fade" onRequestClose={() => setMenuVisible(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setMenuVisible(false)}>
           <View style={styles.menuBox}>
-            <TouchableOpacity style={styles.menuItem} onPress={handleSettings}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); onSettings(); }}>
               <Text style={styles.menuText}>Settings</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-              <Text style={[styles.menuText, styles.logoutText]}>Log out</Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); onLogout(); }}>
+              <Text style={[styles.menuText, { color: "#d9534f" }]}>Log out</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -68,64 +45,31 @@ export default function ProfileHeader({ user, onSettings = () => {}, onLogout = 
 }
 
 const styles = StyleSheet.create({
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
-    paddingTop: 10,
-    width: "100%",
-  },
-  menuButtonWrap: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    zIndex: 10,
-  },
-  menuButton: {
-    padding: 8,
-  },
-  menuDots: {
-    fontSize: 22,
-    color: "#444",
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  name: { fontSize: 22, fontWeight: "700", color: "#333" },
-  email: { fontSize: 14, color: "gray", marginTop: 2 },
-  info: { fontSize: 13, color: "#555", marginTop: 4 },
+  container: { alignItems: "center", marginBottom: 12 },
+  topRight: { position: "absolute", right: 6, top: Platform.OS === "ios" ? 12 : 6 },
+  menuButton: { padding: 6 },
+  menuDots: { fontSize: 22, color: "#333" },
 
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.2)",
-  },
+  avatar: { width: 98, height: 98, borderRadius: 50, marginBottom: 8, backgroundColor: "#eee" },
+  name: { fontSize: 20, fontWeight: "700", color: "#222", marginTop: 4 },
+  sub: { fontSize: 13, color: "#6b6b6b", marginTop: 4 },
+  meta: { fontSize: 13, color: "#6b6b6b", marginTop: 4 },
+
+  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.15)" },
   menuBox: {
     position: "absolute",
-    top: 50, // adjust if you have a status bar/safe area
-    right: 12,
-    width: 160,
+    top: 50,
+    right: 14,
+    width: 150,
     backgroundColor: "#fff",
     borderRadius: 8,
     overflow: "hidden",
     elevation: 6,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
   },
-  menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderBottomColor: "#eee",
-    borderBottomWidth: 1,
-  },
-  menuText: {
-    fontSize: 15,
-    color: "#222",
-  },
-  logoutText: {
-    color: "#d9534f",
-  },
+  menuItem: { paddingVertical: 12, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: "#f2f2f2" },
+  menuText: { fontSize: 15, color: "#222" },
 });

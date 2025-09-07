@@ -1,70 +1,36 @@
-// components/InfoGrid.jsx
+// app/components/InfoGrid.jsx
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
+/** Small tiles grid for quick links. Props:
+ * - items: [{ id, key, value }] (if not provided, pass user.quickLinks)
+ */
 export default function InfoGrid({ items = [] }) {
-  if (!items || items.length === 0) {
-    return null;
-  }
+  if (!items || items.length === 0) return null;
 
   return (
     <View style={styles.wrap}>
-      {items.map((it, index) => (
-        <View key={index} style={styles.card}>
-          <Text style={styles.key} numberOfLines={1} ellipsizeMode="tail">
-            {it.key}
-          </Text>
-
-          <Text style={styles.value} numberOfLines={2} ellipsizeMode="tail">
-            {it.value ?? "—"}
-          </Text>
-
-          {/* optional small divider for visual separation */}
-          <View style={styles.divider} />
-        </View>
+      {items.map((it) => (
+        <TouchableOpacity key={it.id} style={styles.card} onPress={() => console.log("Press", it.key)}>
+          <Text style={styles.k}>{it.key}</Text>
+          {it.value ? <Text style={styles.v}>{it.value}</Text> : null}
+        </TouchableOpacity>
       ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
+  wrap: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   card: {
-    width: "48%", // two columns with small gap
+    width: "48%",
     backgroundColor: "#fff",
+    padding: 14,
     borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
     marginBottom: 12,
-    // subtle shadow for iOS
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    // elevation for Android
+    alignItems: "flex-start",
     elevation: 1,
-    minHeight: 64,
-    justifyContent: "center",
   },
-  key: {
-    fontSize: 12,
-    color: "#7e7e7e",
-    marginBottom: 6,
-  },
-  value: {
-    fontSize: 14,
-    color: "#222",
-    fontWeight: "600",
-    lineHeight: 18,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "transparent", // keep for expansion if you want a visible divider
-    marginTop: 8,
-  },
+  k: { fontSize: 13, color: "#666", marginBottom: 6 },
+  v: { fontSize: 14, fontWeight: "700", color: "#222" },
 });

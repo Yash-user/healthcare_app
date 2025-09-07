@@ -1,32 +1,22 @@
-// components/ReportsList.jsx
+// app/components/ReportsListItem.jsx
 import React from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function ReportsList({ title = "Reports", reports = [] }) {
+export default function ReportsListItem({ report }) {
   return (
-    <View style={{ marginTop: 10 }}>
-      <Text style={styles.title}>{title}</Text>
-      <FlatList
-        data={reports}
-        keyExtractor={(r) => r.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View>
-              <Text style={styles.rTitle}>{item.title}</Text>
-              <Text style={styles.rDate}>{item.date}</Text>
-            </View>
-            <TouchableOpacity style={styles.viewBtn}>
-              <Text style={styles.viewText}>View</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+    <View style={styles.card}>
+      <View>
+        <Text style={styles.rTitle}>{report.title}</Text>
+        <Text style={styles.rDate}>{report.date}</Text>
+      </View>
+      <TouchableOpacity style={styles.viewBtn} onPress={() => console.log("Open report", report.id)}>
+        <Text style={styles.viewText}>View</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 16, fontWeight: "700", marginVertical: 8 },
   card: {
     backgroundColor: "#fff",
     padding: 12,
