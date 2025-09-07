@@ -10,7 +10,11 @@ export default function Navbar() {
   const tabs = [
     { icon: "home-outline", activeIcon: "home", route: "/home" },
     { icon: "calendar-outline", activeIcon: "calendar", route: "/Calendar" },
-    { icon: "add-circle-outline", activeIcon: "add-circle", route: "/reportUpload" },
+    {
+      icon: "add-circle-outline",
+      activeIcon: "add-circle",
+      route: "/reportUpload",
+    },
     { icon: "pie-chart-outline", activeIcon: "pie-chart", route: "/progress" },
     { icon: "person-outline", activeIcon: "person", route: "/profile" },
   ];
