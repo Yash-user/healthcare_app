@@ -30,15 +30,13 @@ export default function Events() {
   };
 
   const handleAction = (action) => {
-    // Handle complete or skip action here
-    console.log(`Event ${selectedEvent?.title} was ${action}`);
     setModalVisible(false);
     setSelectedEvent(null);
   };
 
   return (
 	<View>
-		<Text style={styles.title}> Upcoming Events </Text>
+		<Text style={styles.header}> Upcoming Events </Text>
 		<View style={styles.container}>
 		{events.map((event) => (
 			<Pressable
@@ -50,8 +48,8 @@ export default function Events() {
 				<View style={styles.iconContainer}>
 				<Ionicons
 					name="radio-button-on"
-					size={24}
-					color={event.isNext ? (blinking ? "#4CAF50" : "#e0e0e0") : "#4CAF50"}
+					size={20}
+					color={event.isNext ? (blinking ? "#00eb37ff" : "#449b47ff") : "#449b47ff"}
 				/>
 				</View>
 				<View style={styles.textContainer}>
@@ -103,15 +101,22 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
+  header: {
+    marginTop: 10,
+    padding: 4,
+    marginLeft: 12,
+    fontWeight: 700,
+    fontSize: 16
+  },
   eventBox: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f0f0ff',
     borderRadius: 12,
     marginBottom: 12,
-    padding: 16,
+    padding: 14,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
     shadowRadius: 4,
   },
   eventContent: {
@@ -125,12 +130,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#333',
   },
   time: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666',
     marginTop: 4,
   },
@@ -165,10 +170,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   completeButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4caf8cff',
   },
   skipButton: {
-    backgroundColor: '#FF5722',
+    backgroundColor: '#ec6c1cff',
   },
   buttonText: {
     color: 'white',
@@ -178,6 +183,6 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   cancelText: {
-    color: '#666',
+    color: '#5c5c5cff',
   },
 });
