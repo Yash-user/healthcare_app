@@ -5,7 +5,7 @@ import Navbar from "../components/navbar";
 
 // Replace with your actual Clerk publishable key
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
+const { isSignedIn, isLoaded } = useUser();
 const tokenCache = {
   async getToken(key) {
     try {
@@ -37,7 +37,8 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={CLERK_PUBLISHABLE_KEY}>
       <ClerkLoaded>
-        <LayoutWithNavbar/>
+        <Slot />
+        { isLoaded && isSignedIn && <Navbar />}
       </ClerkLoaded>
     </ClerkProvider>
   );
