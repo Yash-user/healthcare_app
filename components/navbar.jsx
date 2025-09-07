@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -8,32 +8,32 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const tabs = [
-    {icon: "home-outline", route: "/home" },
-    {icon: "calendar-outline", route: "/Calendar" },
-    {icon: "add-circle-outline", route: "/reportupload" },
-    {icon: "pie-chart", route: "/progress" },
-    {icon: "person-outline", route: "/profile" },
-
+    { icon: "home-outline", activeIcon: "home", route: "/home" },
+    { icon: "calendar-outline", activeIcon: "calendar", route: "/Calendar" },
+    {
+      icon: "add-circle-outline",
+      activeIcon: "add-circle",
+      route: "/reportUpload",
+    },
+    { icon: "pie-chart-outline", activeIcon: "pie-chart", route: "/progress" },
+    { icon: "person-outline", activeIcon: "person", route: "/profile" },
   ];
 
   return (
     <View style={styles.navbar}>
-      {tabs.map((tab) => {
+      {tabs.map((tab, index) => {
         const isActive = pathname === tab.route;
         return (
           <TouchableOpacity
-            key={tab.name}
+            key={index}
             style={styles.tabItem}
             onPress={() => router.push(tab.route)}
           >
             <Icon
-              name={tab.icon}
-              size={28}
+              name={isActive ? tab.activeIcon : tab.icon}
+              size={30}
               color={isActive ? "#007AFF" : "gray"}
             />
-            <Text style={[styles.tabText, { color: isActive ? "#007AFF" : "gray" }]}>
-              {tab.name}
-            </Text>
           </TouchableOpacity>
         );
       })}
@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: "row",
     backgroundColor: "white",
-    paddingVertical: 14,
-    paddingBottom: 8,
+    paddingVertical: 12,
+    paddingBottom: 24,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
     justifyContent: "space-around",
@@ -55,9 +55,5 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: "center",
     flex: 1,
-  },
-  tabText: {
-    fontSize: 12,
-    marginTop: 4,
   },
 });

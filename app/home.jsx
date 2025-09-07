@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useUser, useClerk } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
+import Events from "../components/Events"
 
 export default function Home() {
   const { user } = useUser();
@@ -27,8 +28,8 @@ export default function Home() {
       </View>
 
       {/* Main content */}
-      <View style={styles.center}>
-        <Text>Home Screen</Text>
+      <View style={styles.main}>
+        <Events />
       </View>
       {/* Cards Section at the bottom */}
       <Cards />
@@ -60,9 +61,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
   },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  main: {
+    flex: 1
+  }
 });
