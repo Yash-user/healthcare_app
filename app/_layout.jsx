@@ -1,4 +1,4 @@
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded, useUser } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import Navbar from "../components/navbar";
@@ -23,12 +23,21 @@ const tokenCache = {
   },
 };
 
+function LayoutWithNavbar() {
+  const { isSignedIn, isLoaded } = useUser();
+  return (
+    <>
+      <Slot />
+      {isLoaded && isSignedIn && <Navbar />}
+    </>
+  );
+}
+
 export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={CLERK_PUBLISHABLE_KEY}>
       <ClerkLoaded>
-        <Slot />
-        <Navbar />
+        <LayoutWithNavbar/>
       </ClerkLoaded>
     </ClerkProvider>
   );
