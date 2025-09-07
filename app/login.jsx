@@ -121,10 +121,10 @@ export default function Login() {
       <View style={styles.signupContainer}>
         <Text style={styles.signupTextLine}>Don't have an account?</Text>
         <View style={styles.signupButtonsRow}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/signupPatient")}>
             <Text style={styles.signupLink}>Sign up as a PATIENT</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/signupDoctor")}>
             <Text style={styles.signupLink}>Sign up as a DOCTOR</Text>
           </TouchableOpacity>
         </View>

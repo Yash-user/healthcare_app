@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert} from "react-native";
 import { useRouter } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
 
@@ -30,6 +23,7 @@ export default function SignUp() {
         password,
         firstName,
         lastName,
+        unsafeMetadata: { role: "patient" }, // differentiating the role during input from the user
       });
 
       // Send email verification
@@ -44,9 +38,7 @@ export default function SignUp() {
     if (!isLoaded) return;
 
     try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      });
+      const completeSignUp = await signUp.attemptEmailAddressVerification({ code });
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
@@ -63,17 +55,9 @@ export default function SignUp() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Verify Your Email</Text>
-        <Text style={styles.subtitle}>
-          Enter the verification code sent to {email}
-        </Text>
+        <Text style={styles.subtitle}> Enter the verification code sent to {email} </Text>
 
-        <TextInput
-          placeholder="Enter verification code"
-          style={styles.input}
-          value={code}
-          onChangeText={setCode}
-          keyboardType="number-pad"
-        />
+        <TextInput placeholder="Enter verification code" style={styles.input} value={code} onChangeText={setCode} keyboardType="number-pad"/>
 
         <TouchableOpacity style={styles.signupBtn} onPress={handleVerification}>
           <Text style={styles.signupText}>Verify</Text>
@@ -84,43 +68,18 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>SIGN UP</Text>
+      <Text style={styles.title}>SIGN UP PATIENT</Text>
       <Text style={styles.subtitle}>Create your account</Text>
 
-      <TextInput
-        placeholder="First Name"
-        style={styles.input}
-        placeholderTextColor="#888"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
+      <TextInput placeholder="First Name" style={styles.input} placeholderTextColor="#888" value={firstName} onChangeText={setFirstName}/>
 
-      <TextInput
-        placeholder="Last Name"
-        style={styles.input}
-        placeholderTextColor="#888"
-        value={lastName}
-        onChangeText={setLastName}
-      />
+      <TextInput placeholder="Last Name" style={styles.input} placeholderTextColor="#888" value={lastName} onChangeText={setLastName}/>
 
-      <TextInput
-        placeholder="Enter Email"
-        style={styles.input}
-        placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+      <TextInput placeholder="Enter Email" style={styles.input} placeholderTextColor="#888" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none"/>
 
-      <TextInput
-        placeholder="Enter Password"
-        secureTextEntry
-        style={styles.input}
-        placeholderTextColor="#888"
-        value={password}
-        onChangeText={setPassword}
-      />
+      <TextInput placeholder="Enter Password" secureTextEntry style={styles.input} placeholderTextColor="#888" value={password} onChangeText={setPassword}/>
+
+      <TextInput placeholder="Confirm Password" secureTextEntry style={styles.input} placeholderTextColor="#888" value={password} onChangeText={setPassword}/>
 
       <TouchableOpacity style={styles.signupBtn} onPress={handleSignUp}>
         <Text style={styles.signupText}>Sign Up</Text>
