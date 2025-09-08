@@ -1,53 +1,67 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 
 // Sample doctors data
 const doctors = [
   {
-    id: '1',
-    name: 'Samir Gupta',
-    specialty: '',
+    id: "1",
+    name: "Samir Gupta",
+    specialty: "",
     rating: 4.8,
-    image: 'assets/doctor1.jpeg',
+    image: "doctor1.jpeg",
   },
   {
-    id: '2',
-    name: 'Ram Bhagat',
-    specialty: '',
+    id: "2",
+    name: "Ram Bhagat",
+    specialty: "",
     rating: 4.5,
-    image: 'assets/doctor2.jpeg',
+    image: "doctor2.jpeg",
   },
   {
-    id: '3',
-    name: 'Shreevatsa Acharya',
-    specialty: '',
+    id: "3",
+    name: "Shreevatsa Acharya",
+    specialty: "",
     rating: 4.5,
-    image: 'assets/doctor3.jpeg',
+    image: "doctor3.jpeg",
   },
 ];
+
+
+const imageMap = {
+  "doctor1.jpeg": require("../assets/doctor1.jpeg"),
+  "doctor2.jpeg": require("../assets/doctor2.jpeg"),
+  "doctor3.jpeg": require("../assets/doctor3.jpeg"),
+};
 
 export default function Cards() {
   const router = useRouter();
 
   const handleCardPress = (doctor) => {
     router.push({
-      pathname: '/DoctorDetails',
-      params: { 
+      pathname: "/DoctorDetails",
+      params: {
         doctorId: doctor.id,
         name: doctor.name,
         specialty: doctor.specialty,
         rating: doctor.rating,
         image: doctor.image,
-      }
+      },
     });
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleCardPress(item)}>
       <View style={styles.card}>
-        <Image source={{ uri: item.image }} style={styles.image} />
+        <Image source={imageMap[item.image]} style={styles.image} />
         <View style={styles.info}>
           <View style={styles.ratingRow}>
             <Icon name="star" size={14} color="#FFD700" />
@@ -84,55 +98,55 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingRight: 15,
     marginBottom: 10,
   },
   header: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   seeAll: {
     fontSize: 14,
-    color: '#6C63FF',
+    color: "#6C63FF",
   },
   card: {
     width: 140,
     marginRight: 15,
     borderRadius: 10,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
+    backgroundColor: "#fff",
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 2,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
-    width: '70%',
+    width: "70%",
     height: 100,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   info: {
     padding: 10,
   },
   ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 3,
   },
   rating: {
     marginLeft: 4,
     fontSize: 12,
-    color: '#333',
+    color: "#333",
   },
   name: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   specialty: {
     fontSize: 12,
-    color: 'gray',
+    color: "gray",
   },
 });
