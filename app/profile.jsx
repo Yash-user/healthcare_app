@@ -6,11 +6,11 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
 import ProfileHeader from "../components/ProfileHeader";
-import StatCardRow from "../components/StatCardRow";
 import InfoItems from "../components/InfoItems";
 import InfoGrid from "../components/InfoGrid";
 import DoshaList from "../components/DoshaList";
 import ReportsListItem from "../components/ReportsList";
+import Heatmap from "../components/Heatmap";
 import { userData } from "../utils/constants";
 
 export default function Profile({ user = userData }) {
@@ -20,11 +20,31 @@ export default function Profile({ user = userData }) {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.replace("/login"); // go back to login after logout
+      router.replace("/login");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
+
+  // Helper: build counts for current month
+  const buildMonthlyCounts = (reports, year, month) => {
+    const counts = {};
+    reports?.forEach((r) => {
+      const iso = new Date(r.date).toISOString().slice(0, 10);
+      const d = new Date(iso);
+      if (d.getFullYear() === year && d.getMonth() + 1 === month) {
+        counts[iso] = (counts[iso] || 0) + 1;
+      }
+    });
+    return counts;
+  };
+
+  const today = new Date();
+  const monthlyCounts = buildMonthlyCounts(
+    user.reports || [],
+    today.getFullYear(),
+    today.getMonth() + 1
+  );
 
   const ListHeader = () => (
     <View>
@@ -34,8 +54,18 @@ export default function Profile({ user = userData }) {
         onSettings={() => router.push("/settings")}
       />
 
+      {/* Heatmap section */}
       <View style={styles.section}>
-        <StatCardRow user={user} />
+        <Heatmap
+          year={today.getFullYear()}
+          month={today.getMonth() + 1}
+          data={monthlyCounts}
+          startColor="#e6f4ea"
+          endColor="#1b8f3b"
+          emptyColor="#f3f3f3"
+          cellSize={18}
+          onDayPress={(iso, count) => console.log("Day pressed:", iso, count)}
+        />
       </View>
 
       <View style={styles.section}>
@@ -74,7 +104,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 18,
-    paddingTop: 12,
+    paddingTop: 20,
     paddingBottom: 36,
   },
   section: {

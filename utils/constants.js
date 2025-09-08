@@ -72,3 +72,16 @@ export const profileButtonStyles = {
     fontWeight: "700",
   },
 };
+// returns { 'YYYY-MM-DD': count }
+function buildMonthlyCounts(reports, year, month) {
+  const counts = {};
+  reports?.forEach(r => {
+    // assume r.date exists as ISO or convert accordingly
+    const iso = new Date(r.date).toISOString().slice(0,10);
+    const d = new Date(iso);
+    if (d.getFullYear() === year && d.getMonth() + 1 === month) {
+      counts[iso] = (counts[iso] || 0) + 1;
+    }
+  });
+  return counts;
+}
