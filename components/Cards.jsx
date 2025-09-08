@@ -7,24 +7,24 @@ import { useRouter } from 'expo-router';
 const doctors = [
   {
     id: '1',
-    name: 'John Wilson',
-    specialty: 'Cardiology',
+    name: 'Samir Gupta',
+    specialty: '',
     rating: 4.8,
-    image: 'https://via.placeholder.com/100x100.png?text=Dr+1',
+    image: 'assets/doctor1.jpeg',
   },
   {
     id: '2',
-    name: 'Alexa Johnson',
-    specialty: 'Heart Surgeon',
+    name: 'Ram Bhagat',
+    specialty: '',
     rating: 4.5,
-    image: 'https://via.placeholder.com/100x100.png?text=Dr+2',
+    image: 'assets/doctor2.jpeg',
   },
   {
     id: '3',
-    name: 'Tim Smith',
-    specialty: 'Microbiology',
+    name: 'Shreevatsa Acharya',
+    specialty: '',
     rating: 4.5,
-    image: 'https://via.placeholder.com/100x100.png?text=Dr+3',
+    image: 'assets/doctor3.jpeg',
   },
 ];
 
@@ -110,8 +110,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: {
-    width: '100%',
+    width: '70%',
     height: 100,
+    alignSelf: 'center',
   },
   info: {
     padding: 10,
