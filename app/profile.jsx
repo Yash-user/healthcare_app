@@ -1,5 +1,5 @@
 // app/screens/Profile.jsx
-import React from "react";
+import React, { useMemo } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/clerk-expo";
@@ -11,7 +11,7 @@ import InfoGrid from "../components/InfoGrid";
 import DoshaList from "../components/DoshaList";
 import ReportsListItem from "../components/ReportsList";
 import Heatmap from "../components/Heatmap";
-import { userData } from "../utils/constants";
+import { userData, heatmapSampleData } from "../utils/constants";
 
 export default function Profile({ user = userData }) {
   const { signOut } = useAuth();
@@ -26,45 +26,37 @@ export default function Profile({ user = userData }) {
     }
   };
 
-  // Helper: build counts for current month
-  const buildMonthlyCounts = (reports, year, month) => {
+  // Build a global date => count map from user.reports
+  const buildGlobalCounts = (reports = []) => {
     const counts = {};
-    reports?.forEach((r) => {
+    reports.forEach((r) => {
+      // Some dates may already be ISO strings; normalize
       const iso = new Date(r.date).toISOString().slice(0, 10);
-      const d = new Date(iso);
-      if (d.getFullYear() === year && d.getMonth() + 1 === month) {
-        counts[iso] = (counts[iso] || 0) + 1;
-      }
+      counts[iso] = (counts[iso] || 0) + 1;
     });
     return counts;
   };
 
-  const today = new Date();
-  const monthlyCounts = buildMonthlyCounts(
-    user.reports || [],
-    today.getFullYear(),
-    today.getMonth() + 1
-  );
+  // Use real report data if present; otherwise fallback to sample data for demo
+  const reportsCounts = useMemo(() => buildGlobalCounts(user.reports || []), [user.reports]);
+  const heatmapData = Object.keys(reportsCounts).length ? reportsCounts : heatmapSampleData;
 
   const ListHeader = () => (
     <View>
-      <ProfileHeader
-        user={user}
-        onLogout={handleLogout}
-        onSettings={() => router.push("/settings")}
-      />
+      <ProfileHeader user={user} onLogout={handleLogout} onSettings={() => router.push("/settings")} />
 
-      {/* Heatmap section */}
+      {/* Heatmap: last 4 months, horizontal scroll, respects registration date */}
       <View style={styles.section}>
         <Heatmap
-          year={today.getFullYear()}
-          month={today.getMonth() + 1}
-          data={monthlyCounts}
+          data={heatmapData}
+          monthsToShow={4}
+          userRegisteredAt={user.registeredAt}
+          cellSize={12}
+          cellSpacing={4}
           startColor="#e6f4ea"
           endColor="#1b8f3b"
           emptyColor="#f3f3f3"
-          cellSize={18}
-          onDayPress={(iso, count) => console.log("Day pressed:", iso, count)}
+          onDayPress={(iso, count) => console.log("day press", iso, count)}
         />
       </View>
 
@@ -98,16 +90,7 @@ export default function Profile({ user = userData }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
-  },
-  content: {
-    paddingHorizontal: 18,
-    paddingTop: 20,
-    paddingBottom: 36,
-  },
-  section: {
-    marginBottom: 18,
-  },
+  safeArea: { flex: 1, backgroundColor: "#f9f9f9" },
+  content: { paddingHorizontal: 18, paddingTop: 20, paddingBottom: 36 },
+  section: { marginBottom: 18 },
 });
