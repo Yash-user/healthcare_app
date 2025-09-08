@@ -1,4 +1,19 @@
-// Mock User Data
+// app/utils/constants.js
+// Mock User Data + sample heatmap data for frontend demo
+
+export const heatmapSampleData = {
+  // sample counts across a few dates (YYYY-MM-DD)
+  "2025-09-01": 1,
+  "2025-09-02": 2,
+  "2025-09-03": 1,
+  "2025-08-28": 1,
+  "2025-08-15": 3,
+  "2025-07-10": 2,
+  "2025-07-22": 1,
+  "2025-06-05": 4,
+  "2025-06-18": 1,
+};
+
 export const userData = {
   id: "u1",
   name: "Nikunj Sharma",
@@ -6,6 +21,8 @@ export const userData = {
   email: "nikunj@dmail.com",
   address: "Pune, India",
   contact: "+91 6969696969",
+  // <-- add a registration date so heatmap respects it in demos
+  registeredAt: "2025-08-15",
 
   public: {
     age: 30,
@@ -26,7 +43,6 @@ export const userData = {
   },
 
   quickLinks: [
-    // { id: "q1", key: "Book Appointment", value: "" },  // removed for now
     { id: "q2", key: "My Prescriptions" },
     { id: "q3", key: "Payment History" },
   ],
@@ -37,51 +53,14 @@ export const userData = {
     { id: "d3", q: "Appetite good?", a: "Usually" },
   ],
 
+  // use empty or minimal reports for demo; real app will fetch these from backend
   reports: [
     { id: "r1", title: "Blood Test", date: "2025-09-01" },
     { id: "r2", title: "MRI Scan", date: "2025-08-28" },
   ],
 };
 
-// Profile Action Buttons
-export const profileButtons = [
-  { id: "pb1", key: "My Prescriptions" },
-  { id: "pb2", key: "Payment History" },
-];
-
-// Styles for Profile Action Buttons
-export const profileButtonStyles = {
-  container: {
-    marginTop: 16,
-    gap: 14,
-  },
-  button: {
-    backgroundColor: "#2e86de",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  text: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+export default {
+  heatmapSampleData,
+  userData,
 };
-// returns { 'YYYY-MM-DD': count }
-function buildMonthlyCounts(reports, year, month) {
-  const counts = {};
-  reports?.forEach(r => {
-    // assume r.date exists as ISO or convert accordingly
-    const iso = new Date(r.date).toISOString().slice(0,10);
-    const d = new Date(iso);
-    if (d.getFullYear() === year && d.getMonth() + 1 === month) {
-      counts[iso] = (counts[iso] || 0) + 1;
-    }
-  });
-  return counts;
-}
