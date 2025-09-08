@@ -3,18 +3,21 @@ import { Ionicons } from "@expo/vector-icons";
 
 const selfCareData = [
   {
-    icon: "walk-outline",
-    title: "Go for a Walk",
+    icon: "sunny",
+	color: "#FFA726",
+    title: "Dincharya (Routine)",
     description: "Take a 10-minute walk to refresh your mind.",
   },
   {
-    icon: "water-outline",
-    title: "Drink Water",
+    icon: "restaurant",
+	color: "#109331ff",
+    title: "Ahara     (Diet)",
     description: "Stay hydrated by drinking a glass of water.",
   },
   {
-    icon: "bed-outline",
-    title: "Rest",
+    icon: "water",
+	color: "#29B6F6",
+    title: "Abhyanga (Oil Massage)",
     description: "Take a short break and relax your eyes.",
   },
 ];
@@ -32,7 +35,7 @@ export default function SelfCareCards() {
 		<View style={styles.items}>
 			{selfCareData.map((item, idx) => (
 				<View style={styles.card} key={idx}>
-				<Ionicons name={item.icon} size={32} color="#6C63FF" style={styles.icon} />
+				<Ionicons name={item.icon} size={38} color={item.color} style={styles.icon} />
 				<View>
 					<Text style={styles.title}>{item.title}</Text>
 					{/* <Text style={styles.desc}>{item.description}</Text> */}
@@ -63,9 +66,10 @@ const styles = StyleSheet.create({
 	height: cardWidth,
 	width: cardWidth,
 	marginRight: CARD_MARGIN,
+	alignItems: "center",
+	justifyContent: "center",
     backgroundColor: "rgba(245, 245, 245, 1)",
     borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
     shadowColor: "#000",
     shadowOpacity: 0.05,
@@ -79,7 +83,8 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     fontSize: 16,
-    marginBottom: 4,
+    margin: 10,
+	textAlign: "center",
   },
   desc: {
     color: "#666",
