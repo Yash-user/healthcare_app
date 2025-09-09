@@ -18,7 +18,7 @@ export const userData = {
   id: "u1",
   name: "Nikunj Sharma",
   avatar: "https://i.pravatar.cc/150?img=32",
-  email: "nikunj@dmail.com",
+  email: "nikunj@gmail.com",
   address: "Pune, India",
   contact: "+91 6969696969",
   // <-- add a registration date so heatmap respects it in demos

@@ -29,9 +29,9 @@ export default function Navbar() {
 
   const tabs = [
     { icon: "home-outline", activeIcon: "home", route: "/home" },
-    { icon: "calendar-outline", activeIcon: "calendar", route: "/Calendar" },
+    { icon: "calendar-outline", activeIcon: "calendar", route: "/Tracker" },
     {
-      icon: "add-circle-outline",
+      icon: "cloud-upload",
       activeIcon: "add-circle",
       route: "upload", // placeholder, won’t be used
     },
@@ -40,35 +40,45 @@ export default function Navbar() {
   ];
 
   return (
-    <View style={styles.navbar}>
-      {tabs.map((tab, index) => {
-        const isActive = pathname === tab.route;
+  <View style={styles.navbar}>
+    {tabs.map((tab, index) => {
+      const isActive = pathname === tab.route;
 
-        // Special case for the 3rd icon (upload button)
-        if (index === 2) {
-          return (
-            <TouchableOpacity key={index} style={styles.tabItem} onPress={pickDocument}>
-              <Icon name={tab.icon} size={30} color={"#007AFF"} />
-            </TouchableOpacity>
-          );
-        }
-
+      // Special case for the 3rd icon (upload button)
+      if (index === 2) {
         return (
-          <TouchableOpacity
-            key={index}
-            style={styles.tabItem}
-            onPress={() => router.push(tab.route)}
-          >
-            <Icon
-              name={isActive ? tab.activeIcon : tab.icon}
-              size={30}
-              color={isActive ? "#007AFF" : "gray"}
-            />
-          </TouchableOpacity>
+          <View key={index} style={styles.tabItem}>
+            {/* invisible placeholder to preserve spacing */}
+            <View style={{ width: 40, height: 40 }} />
+
+            {/* floating button */}
+            <TouchableOpacity
+              style={styles.uploadButton}
+              onPress={pickDocument}
+            >
+              <Icon name={tab.icon} size={32} color="#fff" />
+            </TouchableOpacity>
+          </View>
         );
-      })}
-    </View>
-  );
+      }
+
+      return (
+        <TouchableOpacity
+          key={index}
+          style={styles.tabItem}
+          onPress={() => router.replace(tab.route)}
+        >
+          <Icon
+            name={isActive ? tab.activeIcon : tab.icon}
+            size={26}
+            color={isActive ? "#007bff" : "gray"}
+          />
+        </TouchableOpacity>
+      );
+    })}
+  </View>
+);
+
 }
 
 const styles = StyleSheet.create({
@@ -85,5 +95,21 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: "center",
     flex: 1,
+  },
+  uploadButton: {
+    position: "absolute",
+    bottom: 10,         // makes it overflow above navbar
+    alignSelf: "center",
+    backgroundColor: "#007AFF",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 5,       // Android shadow
   },
 });
