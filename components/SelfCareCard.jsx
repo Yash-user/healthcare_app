@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
 	justifyContent: "space-between"
   },
   card: {
-	height: cardWidth,
-	width: cardWidth,
-	marginRight: CARD_MARGIN,
-	alignItems: "center",
-	justifyContent: "center",
-    backgroundColor: "rgba(245, 245, 245, 1)",
-    borderRadius: 12,
+    height: cardWidth,
+    width: cardWidth,
+    marginRight: CARD_MARGIN,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 1)",
+    borderRadius: 20,
     marginBottom: 12,
     shadowColor: "#000",
     shadowOpacity: 0.05,
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   icon: {
-    marginRight: 16,
+    marginTop: 15,
   },
   title: {
     fontWeight: "bold",
     fontSize: 16,
     margin: 10,
-	textAlign: "center",
+	  textAlign: "center",
   },
   desc: {
     color: "#666",

@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   eventBox: {
-    backgroundColor: '#f0f0f0ff',
+    backgroundColor: '#ffffffff',
     borderRadius: 12,
     marginBottom: 12,
     padding: 14,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#333',
+    color: '#000000ff',
   },
   time: {
     fontSize: 12,

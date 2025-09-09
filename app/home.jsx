@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useUser, useClerk } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
 import Events from "../components/Events"
@@ -9,16 +9,9 @@ import ChatButton from "../components/ChatButton";
 
 export default function Home() {
   const { user } = useUser();
-  const { signOut } = useClerk();
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace("/");
-  };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.main}>
       {/* Header with user info and logout */}
       <View style={styles.header}>
         <Text style={styles.welcome}>
@@ -43,24 +36,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     paddingTop: 50,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#acd8ebff",
   },
   welcome: {
     fontSize: 16,
     fontWeight: "bold",
     flex: 1,
   },
-  logoutBtn: {
-    backgroundColor: "#6C63FF",
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 5,
-  },
   logoutText: {
     color: "white",
     fontSize: 14,
   },
   main: {
+    backgroundColor: "#f1f1f1ff",
     flex: 1
   }
 });
