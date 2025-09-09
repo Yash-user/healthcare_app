@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
 import Events from "../components/Events"
 import SelfCareCard from "../components/SelfCareCard";
@@ -11,20 +10,21 @@ export default function Home() {
   const { user } = useUser();
 
   return (
-    <View style={styles.main}>
-      {/* Header with user info and logout */}
+     <View style={styles.main}>
+      {/* Header with user info and chat */}
       <View style={styles.header}>
         <Text style={styles.welcome}>
           Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!
         </Text>
-        {/*chat*/}
         <ChatButton />
       </View>
 
-      <Events />
-      <SelfCareCard/>
-      <Cards />
-
+      {/* Scrollable Content */}
+      <ScrollView>
+        <Events />
+        <SelfCareCard />
+        <Cards />
+      </ScrollView>
     </View>
   );
 }
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 20,
-    paddingTop: 50,
+    paddingTop: 45,
     backgroundColor: "#acd8ebff",
   },
   welcome: {
@@ -43,12 +43,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
   },
-  logoutText: {
-    color: "white",
-    fontSize: 14,
-  },
   main: {
     backgroundColor: "#f1f1f1ff",
     flex: 1
-  }
+  },
 });
