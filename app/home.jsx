@@ -5,6 +5,7 @@ import Cards from "../components/Cards";
 import Events from "../components/Events"
 import SelfCareCard from "../components/SelfCareCard";
 import ChatButton from "../components/ChatButton";
+import NotificationButton from "../components/NotificationButton"
 
 export default function Home() {
   const { user } = useUser();
@@ -16,6 +17,7 @@ export default function Home() {
         <Text style={styles.welcome}>
           Welcome, {user?.firstName || user?.emailAddresses[0]?.emailAddress}!
         </Text>
+        <NotificationButton />
         <ChatButton />
       </View>
 
