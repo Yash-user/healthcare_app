@@ -2,13 +2,24 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import Cards from "../components/Cards";
-import Events from "../components/Events"
+import Events from "../components/Events";
 import SelfCareCard from "../components/SelfCareCard";
 import ChatButton from "../components/ChatButton";
 import NotificationButton from "../components/NotificationButton"
 
 export default function Home() {
   const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace("/");
+  };
+
+  const handleNearbyDoctors = () => {
+    router.push("/NearbyDoctors");
+  };
 
   return (
      <View style={styles.main}>
@@ -21,11 +32,27 @@ export default function Home() {
         <ChatButton />
       </View>
 
-      {/* Scrollable Content */}
-      <ScrollView>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <Events />
         <SelfCareCard />
         <Cards />
+
+        {/* New Rectangular Card */}
+        <View style={styles.rectangularCard}>
+          <Text style={styles.cardTitle}>Nearby Doctors</Text>
+          <Text style={styles.cardDescription}>
+            Find doctors near you and book an appointment easily.
+          </Text>
+          <TouchableOpacity
+            style={styles.cardButton}
+            onPress={handleNearbyDoctors}
+          >
+            <Text style={styles.cardButtonText}>View</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -46,7 +73,46 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   main: {
-    backgroundColor: "#f1f1f1ff",
-    flex: 1
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
+  rectangularCard: {
+    margin: 15,
+    marginTop: 20,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: "#666",
+    lineHeight: 20,
+    marginBottom: 15,
+  },
+  cardButton: {
+    backgroundColor: "#6C63FF",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+  },
+  cardButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
