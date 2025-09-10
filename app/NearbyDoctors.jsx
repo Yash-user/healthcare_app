@@ -24,7 +24,7 @@ export default function NearbyDoctors() {
   const [loading, setLoading] = useState(true);
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [searchType, setSearchType] = useState('clinic');
+  const [searchType, setSearchType] = useState('ayurveda clinic');
   const [refreshing, setRefreshing] = useState(false);
   const [mapRegion, setMapRegion] = useState({
     latitude: 28.6, // Default to Delhi coordinates
@@ -90,7 +90,6 @@ export default function NearbyDoctors() {
       const nearbyDoctors = await searchNearbyHealthcare(latitude, longitude);
       const formattedDoctors = nearbyDoctors.map(doctor => ({
         ...doctor,
-        image: getRandomDoctorImage(),
         distance: `${doctor.distance.toFixed(1)}km`
       }));
       setDoctors(formattedDoctors);
@@ -100,15 +99,6 @@ export default function NearbyDoctors() {
     } finally {
       setRefreshing(false);
     }
-  };
-
-  const getRandomDoctorImage = () => {
-    const images = [
-      require('../assets/doctor1.jpeg'),
-      require('../assets/doctor2.jpeg'),
-      require('../assets/doctor3.jpeg'),
-    ];
-    return images[Math.floor(Math.random() * images.length)];
   };
 
   const handleRefresh = async () => {
@@ -129,7 +119,6 @@ export default function NearbyDoctors() {
         );
         const formattedDoctors = specificDoctors.map(doctor => ({
           ...doctor,
-          image: getRandomDoctorImage(),
           distance: `${doctor.distance.toFixed(1)}km`
         }));
         setDoctors(formattedDoctors);
@@ -158,9 +147,7 @@ export default function NearbyDoctors() {
       params: {
         doctorId: doctor.id,
         name: doctor.name,
-        specialty: doctor.specialty,
         rating: doctor.rating,
-        image: doctor.image,
       },
     });
   };
@@ -203,7 +190,7 @@ export default function NearbyDoctors() {
       {/* Search Type Selector */}
       <View style={styles.searchTypeContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {['clinic', 'hospital', 'pharmacy', 'ayurveda clinic', 'dental clinic'].map((type) => (
+          {['ayurveda clinic'].map((type) => (
             <TouchableOpacity
               key={type}
               style={[
@@ -257,7 +244,7 @@ export default function NearbyDoctors() {
                   longitude: doctor.longitude,
                 }}
                 title={doctor.name}
-                description={`${doctor.specialty} - ${doctor.distance}`}
+                description={`${doctor.distance}`}
                 onPress={() => handleDoctorPress(doctor)}
               >
                 <View style={[
@@ -302,10 +289,11 @@ export default function NearbyDoctors() {
         {selectedDoctor && !mapError && (
           <View style={styles.selectedDoctorCard}>
             <View style={styles.selectedDoctorInfo}>
-              <Image source={selectedDoctor.image} style={styles.selectedDoctorImage} />
+              <View style={styles.selectedDoctorIconContainer}>
+                <Icon name="medical" size={24} color="#6C63FF" />
+              </View>
               <View style={styles.selectedDoctorDetails}>
                 <Text style={styles.selectedDoctorName}>{selectedDoctor.name}</Text>
-                <Text style={styles.selectedDoctorSpecialty}>{selectedDoctor.specialty}</Text>
                 <View style={styles.selectedDoctorRating}>
                   <Icon name="star" size={14} color="#FFD700" />
                   <Text style={styles.ratingText}>{selectedDoctor.rating}</Text>
@@ -343,13 +331,12 @@ export default function NearbyDoctors() {
                 onPress={() => handleDoctorPress(doctor)}
               >
                 <View style={styles.doctorAvatar}>
-                  <Image source={doctor.image} style={styles.avatarImage} />
+                  <Icon name="medical" size={24} color="#6C63FF" />
                 </View>
                 <View style={styles.doctorInfo}>
                   <Text style={styles.doctorName} numberOfLines={1}>
                     {doctor.name}
                   </Text>
-                  <Text style={styles.doctorSpecialty}>{doctor.specialty}</Text>
                   <View style={styles.ratingContainer}>
                     <Icon name="star" size={16} color="#FFD700" />
                     <Text style={styles.rating}>{doctor.rating}</Text>
@@ -559,10 +546,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  selectedDoctorImage: {
+  selectedDoctorIconContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
   },
   selectedDoctorDetails: {
@@ -572,11 +562,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 4,
-  },
-  selectedDoctorSpecialty: {
-    fontSize: 14,
-    color: '#666',
     marginBottom: 4,
   },
   selectedDoctorRating: {
@@ -652,13 +637,10 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 15,
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
   },
   doctorInfo: {
     flex: 1,
@@ -667,11 +649,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 4,
-  },
-  doctorSpecialty: {
-    fontSize: 14,
-    color: '#666',
     marginBottom: 4,
   },
   doctorAddress: {
