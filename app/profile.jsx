@@ -1,6 +1,6 @@
-// app/screens/Profile.jsx
+// profile.jsx
 import React, { useMemo } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -10,8 +10,10 @@ import InfoItems from "../components/InfoItems";
 import InfoGrid from "../components/InfoGrid";
 import DoshaList from "../components/DoshaList";
 import ReportsListItem from "../components/ReportsList";
-import Heatmap from "../components/Heatmap";
+import ActivityHeatmap from "../components/ActivityHeatmap";
+
 import { userData, heatmapSampleData } from "../utils/constants";
+import { getHeatmapActivities } from "../utils/heatmapUtils";
 
 export default function Profile({ user = userData }) {
   const { signOut } = useAuth();
@@ -26,39 +28,20 @@ export default function Profile({ user = userData }) {
     }
   };
 
-  // Build a global date => count map from user.reports
-  const buildGlobalCounts = (reports = []) => {
-    const counts = {};
-    reports.forEach((r) => {
-      // Some dates may already be ISO strings; normalize
-      const iso = new Date(r.date).toISOString().slice(0, 10);
-      counts[iso] = (counts[iso] || 0) + 1;
-    });
-    return counts;
-  };
+  const heatmapActivities = useMemo(
+    () => getHeatmapActivities(user.reports || []),
+    [user.reports]
+  );
 
-  // Use real report data if present; otherwise fallback to sample data for demo
-  const reportsCounts = useMemo(() => buildGlobalCounts(user.reports || []), [user.reports]);
-  const heatmapData = Object.keys(reportsCounts).length ? reportsCounts : heatmapSampleData;
+  const finalHeatmapData = heatmapActivities.length > 0 ? heatmapActivities : heatmapSampleData;
 
   const ListHeader = () => (
     <View>
       <ProfileHeader user={user} onLogout={handleLogout} onSettings={() => router.push("/settings")} />
 
-      {/* Heatmap: last 4 months, horizontal scroll, respects registration date */}
-      <View style={styles.section}>
-        <Heatmap
-          data={heatmapData}
-          monthsToShow={4}
-          userRegisteredAt={user.registeredAt}
-          cellSize={12}
-          cellSpacing={4}
-          startColor="#e6f4ea"
-          endColor="#1b8f3b"
-          emptyColor="#f3f3f3"
-          onDayPress={(iso, count) => console.log("day press", iso, count)}
-        />
-      </View>
+      {/* Activity Heatmap: pass user's registeredAt as startDate so heatmap respects registration */}
+      <ActivityHeatmap activities={finalHeatmapData} startDate={user.registeredAt ? new Date(user.registeredAt) : undefined} />
+
 
       <View style={styles.section}>
         <InfoItems user={user} />
@@ -93,4 +76,9 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#f9f9f9" },
   content: { paddingHorizontal: 18, paddingTop: 20, paddingBottom: 36 },
   section: { marginBottom: 18 },
+
+  legendRow: { flexDirection: "row", alignItems: "center", marginTop: 12, paddingHorizontal: 2 },
+  legendItem: { flexDirection: "row", alignItems: "center", marginRight: 12 },
+  legendSwatch: { width: 14, height: 14, borderRadius: 3, marginRight: 6 },
+  legendLabel: { fontSize: 11, color: "#555" },
 });
