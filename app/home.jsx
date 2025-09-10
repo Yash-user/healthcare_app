@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 import Cards from "../components/Cards";
 import Events from "../components/Events";
 import SelfCareCard from "../components/SelfCareCard";
@@ -9,13 +10,7 @@ import NotificationButton from "../components/NotificationButton"
 
 export default function Home() {
   const { user } = useUser();
-  const { signOut } = useClerk();
   const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace("/");
-  };
 
   const handleNearbyDoctors = () => {
     router.push("/NearbyDoctors");
@@ -32,10 +27,7 @@ export default function Home() {
         <ChatButton />
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView>
         <Events />
         <SelfCareCard />
         <Cards />
@@ -74,10 +66,6 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   rectangularCard: {
     margin: 15,
