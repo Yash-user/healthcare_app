@@ -1,39 +1,95 @@
 // OpenStreetMap Nominatim API service for finding nearby healthcare providers
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
 
-// Healthcare search terms for different specialties
+// Rate limiting to respect Nominatim's usage policy
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 1000; // 1 second between requests
+
+// Generic healthcare search terms
 const HEALTHCARE_SEARCH_TERMS = [
-  'ayurveda clinic',
-  'panchakarma'
+  'Ayurvedic clinic',
 ];
+
+// Rate-limited fetch function
+const rateLimitedFetch = async (url, options = {}) => {
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    const waitTime = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+  }
+  
+  lastRequestTime = Date.now();
+  return fetch(url, {
+    ...options,
+    headers: {
+      'User-Agent': 'HealthcareApp/1.0 (your-email@example.com)',
+      'Accept': 'application/json',
+      ...options.headers,
+    },
+  });
+};
 
 // Function to search for nearby healthcare providers using Nominatim API
 export const searchNearbyHealthcare = async (latitude, longitude, radius = 5000) => {
   try {
+    console.log(`Searching for healthcare providers near ${latitude}, ${longitude}`);
+    
     const searchPromises = HEALTHCARE_SEARCH_TERMS.map(async (searchTerm) => {
-      const url = `${NOMINATIM_BASE_URL}/search?q=${encodeURIComponent(searchTerm)}&format=json&limit=5&lat=${latitude}&lon=${longitude}&bounded=1&viewbox=${longitude-0.1},${latitude+0.1},${longitude+0.1},${latitude-0.1}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      return data.map(place => ({
-        id: place.place_id.toString(),
-        name: place.display_name.split(',')[0] || place.name || `${searchTerm} Center`,
-        specialty: getSpecialtyFromSearchTerm(searchTerm),
-        latitude: parseFloat(place.lat),
-        longitude: parseFloat(place.lon),
-        address: place.display_name,
-        rating: generateRandomRating(),
-        distance: calculateDistance(latitude, longitude, parseFloat(place.lat), parseFloat(place.lon)),
-        phone: generateRandomPhone(),
-        consultationFee: generateRandomFee(),
-        experience: generateRandomExperience(),
-        source: 'openstreetmap'
-      }));
+      try {
+        const url = `${NOMINATIM_BASE_URL}/search?q=${encodeURIComponent(searchTerm)}&format=json&limit=5&lat=${latitude}&lon=${longitude}&bounded=1&viewbox=${longitude-0.1},${latitude+0.1},${longitude+0.1},${latitude-0.1}`;
+        
+        const response = await rateLimitedFetch(url);
+        
+        if (!response.ok) {
+          console.warn(`Nominatim API error for "${searchTerm}": ${response.status} ${response.statusText}`);
+          return [];
+        }
+        
+        const text = await response.text();
+        
+        // Check if response is valid JSON
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.warn(`Invalid JSON response from Nominatim for "${searchTerm}":`, text.substring(0, 200));
+          return [];
+        }
+        
+        // Ensure data is an array
+        if (!Array.isArray(data)) {
+          console.warn(`Unexpected data format from Nominatim for "${searchTerm}":`, data);
+          return [];
+        }
+        
+        return data.map(place => ({
+          id: place.place_id.toString(),
+          name: place.display_name.split(',')[0] || place.name || `${searchTerm} Center`,
+          latitude: parseFloat(place.lat),
+          longitude: parseFloat(place.lon),
+          address: place.display_name,
+          rating: generateRandomRating(),
+          distance: calculateDistance(latitude, longitude, parseFloat(place.lat), parseFloat(place.lon)),
+          phone: generateRandomPhone(),
+          consultationFee: generateRandomFee(),
+          experience: generateRandomExperience(),
+          source: 'openstreetmap'
+        }));
+      } catch (termError) {
+        console.warn(`Error searching for "${searchTerm}":`, termError.message);
+        return [];
+      }
     });
 
     const allResults = await Promise.all(searchPromises);
     const flatResults = allResults.flat();
+    
+    if (flatResults.length === 0) {
+      console.log('No results from Nominatim, using fallback data');
+      return getFallbackDoctors(latitude, longitude);
+    }
     
     // Remove duplicates and sort by distance
     const uniqueResults = removeDuplicates(flatResults);
@@ -45,23 +101,6 @@ export const searchNearbyHealthcare = async (latitude, longitude, radius = 5000)
     console.error('Error fetching from Nominatim:', error);
     return getFallbackDoctors(latitude, longitude);
   }
-};
-
-// Function to get specialty from search term
-const getSpecialtyFromSearchTerm = (searchTerm) => {
-  const specialtyMap = {
-    'hospital': 'General Medicine',
-    'clinic': 'General Physician',
-    'medical center': 'Multi-Specialty',
-    'doctor': 'General Physician',
-    'pharmacy': 'Pharmacist',
-    'health center': 'Primary Care',
-    'ayurveda clinic': 'Ayurvedic Doctor',
-    'dental clinic': 'Dentist',
-    'eye clinic': 'Ophthalmologist',
-    'heart clinic': 'Cardiologist'
-  };
-  return specialtyMap[searchTerm] || 'Healthcare Provider';
 };
 
 // Helper function to calculate distance between two coordinates
@@ -104,14 +143,14 @@ const generateRandomRating = () => {
 };
 
 const generateRandomPhone = () => {
-  const area = Math.floor(Math.random() * 900) + 100;
-  const exchange = Math.floor(Math.random() * 900) + 100;
-  const number = Math.floor(Math.random() * 9000) + 1000;
-  return `+1 (${area}) ${exchange}-${number}`;
+  // Generate Indian phone numbers
+  const area = Math.floor(Math.random() * 90000) + 10000; // 5 digits
+  const number = Math.floor(Math.random() * 90000) + 10000; // 5 digits
+  return `+91 ${area}-${number}`;
 };
 
 const generateRandomFee = () => {
-  const fees = ['$50', '$75', '$100', '$125', '$150', '$200'];
+  const fees = ['₹300', '₹500', '₹750', '₹1000', '₹1200', '₹1500'];
   return fees[Math.floor(Math.random() * fees.length)];
 };
 
@@ -119,46 +158,67 @@ const generateRandomExperience = () => {
   return `${Math.floor(Math.random() * 20) + 3} years`;
 };
 
-// Fallback doctors data when API fails
+// Fallback doctors data when API fails - generic healthcare providers
 const getFallbackDoctors = (userLat, userLon) => {
   const fallbackData = [
     {
       id: 'fb1',
       name: 'City Medical Center',
-      specialty: 'General Medicine',
       latitude: userLat + 0.01,
       longitude: userLon + 0.01,
-      address: 'Near your location',
+      address: 'Near Dwarka Sector 21, New Delhi',
       rating: '4.5',
-      phone: '+1 (555) 123-4567',
-      consultationFee: '$100',
-      experience: '10 years',
+      phone: '+91 98765-43210',
+      consultationFee: '₹500',
+      experience: '15 years',
       source: 'fallback'
     },
     {
       id: 'fb2',
       name: 'Community Health Clinic',
-      specialty: 'Primary Care',
-      latitude: userLat - 0.01,
-      longitude: userLon - 0.01,
-      address: 'Near your location',
+      latitude: userLat - 0.008,
+      longitude: userLon - 0.012,
+      address: 'Near Dwarka Sector 18, New Delhi',
       rating: '4.3',
-      phone: '+1 (555) 987-6543',
-      consultationFee: '$75',
-      experience: '8 years',
+      phone: '+91 87654-32109',
+      consultationFee: '₹600',
+      experience: '12 years',
       source: 'fallback'
     },
     {
       id: 'fb3',
-      name: 'Wellness Center',
-      specialty: 'Multi-Specialty',
+      name: 'General Hospital',
       latitude: userLat + 0.005,
       longitude: userLon - 0.005,
-      address: 'Near your location',
+      address: 'Near Dwarka Sector 19, New Delhi',
       rating: '4.7',
-      phone: '+1 (555) 456-7890',
-      consultationFee: '$125',
-      experience: '15 years',
+      phone: '+91 76543-21098',
+      consultationFee: '₹450',
+      experience: '18 years',
+      source: 'fallback'
+    },
+    {
+      id: 'fb4',
+      name: 'Multi-Specialty Clinic',
+      latitude: userLat - 0.015,
+      longitude: userLon + 0.008,
+      address: 'Near Dwarka Sector 23, New Delhi',
+      rating: '4.6',
+      phone: '+91 65432-10987',
+      consultationFee: '₹700',
+      experience: '20 years',
+      source: 'fallback'
+    },
+    {
+      id: 'fb5',
+      name: 'Primary Care Center',
+      latitude: userLat + 0.012,
+      longitude: userLon + 0.006,
+      address: 'Near Dwarka Sector 22, New Delhi',
+      rating: '4.4',
+      phone: '+91 54321-09876',
+      consultationFee: '₹550',
+      experience: '10 years',
       source: 'fallback'
     }
   ];
@@ -174,13 +234,33 @@ export const searchSpecificHealthcare = async (latitude, longitude, searchType =
   try {
     const url = `${NOMINATIM_BASE_URL}/search?q=${encodeURIComponent(searchType)}&format=json&limit=20&lat=${latitude}&lon=${longitude}&bounded=1&viewbox=${longitude-0.05},${latitude+0.05},${longitude+0.05},${latitude-0.05}`;
     
-    const response = await fetch(url);
-    const data = await response.json();
+    const response = await rateLimitedFetch(url);
+    
+    if (!response.ok) {
+      console.warn(`Nominatim API error: ${response.status} ${response.statusText}`);
+      return [];
+    }
+    
+    const text = await response.text();
+    
+    // Check if response is valid JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      console.warn(`Invalid JSON response from Nominatim for "${searchType}":`, text.substring(0, 200));
+      return [];
+    }
+    
+    // Ensure data is an array
+    if (!Array.isArray(data)) {
+      console.warn(`Unexpected data format from Nominatim for "${searchType}":`, data);
+      return [];
+    }
     
     return data.map(place => ({
       id: place.place_id.toString(),
       name: place.display_name.split(',')[0] || place.name || `Healthcare Provider`,
-      specialty: getSpecialtyFromSearchTerm(searchType),
       latitude: parseFloat(place.lat),
       longitude: parseFloat(place.lon),
       address: place.display_name,
