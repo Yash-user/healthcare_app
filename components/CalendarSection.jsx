@@ -83,7 +83,7 @@ export default function CalendarSection({ therapies, selectedDate, onDateSelect 
           </Text>
           <ScrollView 
             style={styles.selectedDateScroll} 
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             nestedScrollEnabled={true}
           >
             {selectedDateTherapies.map((therapy, index) => (
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   selectedDateSection: {
-    maxHeight: 200,
+    maxHeight: 300,
+    height: 310,
   },
   selectedDateTitle: {
     fontSize: 16,
@@ -136,6 +137,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   selectedDateScroll: {
-    maxHeight: 180,
+    maxHeight: 300,
   },
 });
