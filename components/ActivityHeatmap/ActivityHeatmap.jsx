@@ -73,35 +73,40 @@ const ActivityHeatmap = ({ activities = [], monthsBack = 12 }) => {
   }
 
   // cell renderer for a given date
-  // cell renderer for a given date
-function renderCellForDate(d, keyIndex) {
-  const key = format(d, "yyyy-MM-dd");
-  const activity = activityMap[key];
-  const level = activity ? activity.level ?? 0 : 0;
+  function renderCellForDate(d, keyIndex) {
+    const key = format(d, "yyyy-MM-dd");
+    const activity = activityMap[key];
+    const level = activity ? activity.level ?? 0 : 0;
 
-  // pick correct color (level0 gray if no activity)
-  const color =
-    getColor?.(level, CELL_COLORS) ?? CELL_COLORS[`level${level}`] ?? CELL_COLORS.level0;
+    // pick correct color (level0 gray if no activity)
+    const color =
+      getColor?.(level, CELL_COLORS) ??
+      CELL_COLORS[`level${level}`] ??
+      CELL_COLORS.level0;
 
-  const displayDate = d.toLocaleDateString();
+    const displayDate = d.toLocaleDateString();
 
-  return (
-    <Tooltip
-      key={keyIndex}
-      content={`${displayDate}\n${activity ? `Count: ${activity.count ?? 0}` : "No activity"}`}
-    >
-      <TouchableOpacity activeOpacity={0.9} style={styles.cellTouchable}>
-        <View
-          style={[
-            styles.cell,
-            { backgroundColor: color },
-          ]}
-        />
-      </TouchableOpacity>
-    </Tooltip>
-  );
-}
-
+    return (
+      <Tooltip
+        key={keyIndex}
+        content={
+          <View>
+            <Text>{displayDate}</Text>
+            <Text>{activity ? `Count: ${activity.count ?? 0}` : "No activity"}</Text>
+          </View>
+        }
+      >
+        <TouchableOpacity activeOpacity={0.9} style={styles.cellTouchable}>
+          <View
+            style={[
+              styles.cell,
+              { backgroundColor: color },
+            ]}
+          />
+        </TouchableOpacity>
+      </Tooltip>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -110,14 +115,21 @@ function renderCellForDate(d, keyIndex) {
         <View style={styles.weekdayColumn}>
           <View style={{ height: 18 }} /> {/* spacer to align with month labels */}
           {WEEK_DAYS.map((d, i) => (
-            <Text key={i} style={[styles.weekDayLabel, { height: CELL_SIZE + CELL_MARGIN }]}>
+            <Text
+              key={i}
+              style={[styles.weekDayLabel, { height: CELL_SIZE + CELL_MARGIN }]}
+            >
               {d}
             </Text>
           ))}
         </View>
 
         {/* Scrollable months (only this scrolls horizontally) */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.monthsScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.monthsScroll}
+        >
           <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
             {monthRanges.map((month, mi) => {
               const mStart = startOfMonth(month.start);
@@ -136,10 +148,21 @@ function renderCellForDate(d, keyIndex) {
                         {Array.from({ length: 7 }).map((__, di) => {
                           const day = addDays(gridStart, wi * 7 + di);
                           // show only days that belong to this month
-                          const inThisMonth = isWithinInterval(day, { start: mStart, end: mEnd });
+                          const inThisMonth = isWithinInterval(day, {
+                            start: mStart,
+                            end: mEnd,
+                          });
                           if (!inThisMonth) {
                             // render transparent/invisible cell so layout stays consistent
-                            return <View key={di} style={[styles.cell, { backgroundColor: "transparent" }]} />;
+                            return (
+                              <View
+                                key={di}
+                                style={[
+                                  styles.cell,
+                                  { backgroundColor: "transparent" },
+                                ]}
+                              />
+                            );
                           }
                           return renderCellForDate(day, `${mi}-${wi}-${di}`);
                         })}
@@ -153,11 +176,17 @@ function renderCellForDate(d, keyIndex) {
         </ScrollView>
       </View>
 
-      {/* Legend (unchanged) */}
+      {/* Legend */}
       <View style={styles.legend}>
         <Text style={styles.legendText}>None</Text>
         {[1, 2, 3, 4].map((lvl) => (
-          <View key={lvl} style={[styles.legendCell, { backgroundColor: CELL_COLORS[`level${lvl}`] }]} />
+          <View
+            key={lvl}
+            style={[
+              styles.legendCell,
+              { backgroundColor: CELL_COLORS[`level${lvl}`] },
+            ]}
+          />
         ))}
         <Text style={styles.legendText}>More</Text>
       </View>
