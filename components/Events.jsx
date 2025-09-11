@@ -102,11 +102,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    marginTop: 10,
-    padding: 4,
+    marginTop: 16,
+    padding: 6,
     marginLeft: 12,
     fontWeight: 700,
-    fontSize: 16
+    fontSize: 18
   },
   eventBox: {
     backgroundColor: '#f0f0f0ff',
