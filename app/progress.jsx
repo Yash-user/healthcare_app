@@ -105,7 +105,7 @@ export default function Progress() {
           </Card>
         </View>
 
-        {/* Therapy-wise completion: grid of compact pies */}
+        {/* Therapy-wise completion: grid of compact bars */}
         <ChartCard
           title="Therapy-wise Completion"
           hint="Completed vs remaining per therapy"
@@ -113,20 +113,16 @@ export default function Progress() {
           <TherapyGrid therapies={therapyFields} />
         </ChartCard>
 
-        {/* Overall therapy completion donut */}
+        {/* Level progress with bar charts */}
         <View style={styles.row}>
           <ChartCard title="Level Progress" hint="Progress by therapy levels" style={{ flexGrow: 1 }}>
-            {V ? (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <View style={styles.levelProgressContainer}>
-                  <LevelProgress level={1} percent={64} color={COLORS.level1} />
-                  <LevelProgress level={2} percent={79} color={COLORS.level2} />
-                  <LevelProgress level={3} percent={97} color={COLORS.level3} />
-                </View>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <View style={styles.levelProgressContainer}>
+                <LevelProgress level={1} percent={64} color={COLORS.level1} />
+                <LevelProgress level={2} percent={79} color={COLORS.level2} />
+                <LevelProgress level={3} percent={97} color={COLORS.level3} />
               </View>
-            ) : (
-              <LevelProgressFallback />
-            )}
+            </View>
           </ChartCard>
 
           {/* Compact KPI card */}
@@ -254,6 +250,7 @@ function Legend(props) {
 function TherapyGrid(props) {
   const perRow = CHART_W > 420 ? 3 : 2;
   const itemW = (CHART_W - (perRow - 1) * 10) / perRow;
+  const barHeight = 12;
 
   return (
     <View style={{ width: CHART_W, flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
@@ -270,39 +267,22 @@ function TherapyGrid(props) {
             ]}
           >
             <Text numberOfLines={1} style={styles.therapyTitle}>{t.key}</Text>
-
-            {V ? (
-              <View style={{ alignItems: 'center', justifyContent: 'center', height: itemW }}>
-                {/* White background circle to ensure inner area is white */}
-                <View style={[styles.innerCircle, { 
-                  width: itemW * 0.6, 
-                  height: itemW * 0.6,
-                  borderRadius: itemW * 0.3,
-                }]} />
-                <V.VictoryPie
-                  width={itemW}
-                  height={itemW}
-                  innerRadius={itemW * 0.6}
-                  padAngle={0}
-                  startAngle={90}
-                  endAngle={450}
-                  colorScale={[t.color, COLORS.grayTrack]}
-                  labels={() => null}
-                  data={[
-                    { x: 'Done', y: done },
-                    { x: 'Left', y: Math.max(0, t.total - done) },
-                  ]}
-                  style={{ data: { stroke: '#fff', strokeWidth: 1 } }}
+            
+            {/* Progress bar */}
+            <View style={styles.barContainer}>
+              <View style={styles.barBackground}>
+                <View 
+                  style={[
+                    styles.barFill, 
+                    { 
+                      width: `${pct}%`, 
+                      backgroundColor: t.color 
+                    }
+                  ]} 
                 />
-                <View style={styles.pieCenterMini}>
-                  <Text style={[styles.pieMiniPct, { color: COLORS.black }]}>{pct}%</Text>
-                </View>
               </View>
-            ) : (
-              <View style={{ alignItems: 'center', justifyContent: 'center', height: itemW }}>
-                <MiniPieFallback pct={pct} size={itemW} color={t.color} />
-              </View>
-            )}
+              <Text style={styles.barPercentage}>{pct}%</Text>
+            </View>
 
             <Text style={styles.therapySub}>
               {done}/{t.total} sessions
@@ -315,121 +295,31 @@ function TherapyGrid(props) {
 }
 
 function LevelProgress(props) {
-  const ringWidth = 12;
-  const size = 80;
+  const barWidth = 100;
+  const barHeight = 12;
   
   return (
     <View style={styles.levelItem}>
       <Text style={styles.levelLabel}>Level {props.level}</Text>
-      <View style={styles.levelChart}>
-        {V ? (
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            {/* White background circle */}
-            <View style={[styles.innerCircle, { 
-              width: size - ringWidth * 2, 
-              height: size - ringWidth * 2,
-              borderRadius: (size - ringWidth * 2) / 2,
-            }]} />
-            <V.VictoryPie
-              width={size}
-              height={size}
-              innerRadius={size/2 - ringWidth}
-              padAngle={0}
-              startAngle={90}
-              endAngle={450}
-              colorScale={[props.color, COLORS.grayTrack]}
-              labels={() => null}
-              data={[
-                { x: 'Done', y: props.percent },
-                { x: 'Left', y: 100 - props.percent },
-              ]}
-              style={{ data: { stroke: '#fff', strokeWidth: 1 } }}
-            />
-            <View style={[styles.pieCenterMini, { width: size, height: size }]}>
-              <Text style={[styles.levelPercent, { color: COLORS.black }]}>{props.percent}%</Text>
-            </View>
-          </View>
-        ) : (
-          <View style={[styles.levelFallback, { width: size, height: size }]}>
-            <Text style={styles.levelPercent}>{props.percent}%</Text>
-          </View>
-        )}
+      <View style={styles.levelBarContainer}>
+        <View style={styles.levelBarBackground}>
+          <View 
+            style={[
+              styles.levelBarFill, 
+              { 
+                width: `${props.percent}%`, 
+                backgroundColor: props.color 
+              }
+            ]} 
+          />
+        </View>
+        <Text style={styles.levelPercent}>{props.percent}%</Text>
       </View>
     </View>
   );
 }
 
 // ========= Fallbacks (no charts lib) =========
-
-function LevelProgressFallback() {
-  return (
-    <View style={styles.levelProgressContainer}>
-      <View style={styles.levelItem}>
-        <Text style={styles.levelLabel}>Level 1</Text>
-        <View style={[styles.levelFallback, { width: 80, height: 80 }]}>
-          <Text style={styles.levelPercent}>64%</Text>
-        </View>
-      </View>
-      <View style={styles.levelItem}>
-        <Text style={styles.levelLabel}>Level 2</Text>
-        <View style={[styles.levelFallback, { width: 80, height: 80 }]}>
-          <Text style={styles.levelPercent}>79%</Text>
-        </View>
-      </View>
-      <View style={styles.levelItem}>
-        <Text style={styles.levelLabel}>Level 3</Text>
-        <View style={[styles.levelFallback, { width: 80, height: 80 }]}>
-          <Text style={styles.levelPercent}>97%</Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-function MiniPieFallback(props) {
-  const ringWidth = Math.max(8, Math.floor(props.size * 0.15));
-  const innerRadius = props.size * 0.6;
-  
-  return (
-    <View style={[styles.miniPieFallbackContainer, { width: props.size, height: props.size }]}>
-      {/* Background circle for the ring */}
-      <View style={[
-        styles.miniPieRingBackground,
-        { 
-          width: props.size, 
-          height: props.size,
-          borderRadius: props.size / 2,
-          borderWidth: ringWidth,
-          borderColor: COLORS.grayTrack,
-        }
-      ]} />
-      
-      {/* Colored progress arc */}
-      <View style={[
-        styles.miniPieRingProgress,
-        { 
-          width: props.size, 
-          height: props.size,
-          borderWidth: ringWidth,
-          borderColor: props.color,
-          transform: [{ rotate: `${-90}deg` }],
-        }
-      ]} />
-      
-      {/* White inner circle */}
-      <View style={[
-        styles.miniPieInnerCircle,
-        {
-          width: innerRadius,
-          height: innerRadius,
-          borderRadius: innerRadius / 2,
-        }
-      ]} />
-      
-      <Text style={[styles.pieMiniPct, { color: COLORS.black }]}>{props.pct}%</Text>
-    </View>
-  );
-}
 
 function DottedLineFallback(props) {
   const { width: winW } = useWindowDimensions();
@@ -601,22 +491,73 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 13, fontWeight: '700', color: COLORS.subtext, fontFamily: fontBase() },
   cardHint: { fontSize: 12, color: COLORS.subtext, marginTop: 6, lineHeight: 18, fontFamily: fontBase() },
   metric: { fontSize: 20, fontWeight: '900', marginTop: 6, fontFamily: fontHeavy() },
-  innerCircle: {
-    position: 'absolute',
-    backgroundColor: '#FFFFFF',
-    zIndex: 1,
+  barContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginVertical: 8,
   },
-  pieCenterMini: { 
-    position: 'absolute', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    zIndex: 2,
+  barBackground: {
+    flex: 1,
+    height: 12,
+    backgroundColor: COLORS.grayTrack,
+    borderRadius: 6,
+    overflow: 'hidden',
+    marginRight: 8,
   },
-  pieMiniPct: {
-    fontSize: 14,
-    fontWeight: '900',
+  barFill: {
+    height: '100%',
+    borderRadius: 6,
+  },
+  barPercentage: {
+    fontSize: 12,
+    fontWeight: '700',
     color: COLORS.black,
-    fontFamily: fontHeavy(),
+    minWidth: 30,
+    textAlign: 'right',
+    fontFamily: fontBase(),
+  },
+  levelProgressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 16,
+  },
+  levelItem: {
+    alignItems: 'center',
+    marginHorizontal: 8,
+  },
+  levelLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.subtext,
+    marginBottom: 8,
+    fontFamily: fontBase(),
+  },
+  levelBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 120,
+  },
+  levelBarBackground: {
+    flex: 1,
+    height: 12,
+    backgroundColor: COLORS.grayTrack,
+    borderRadius: 6,
+    overflow: 'hidden',
+    marginRight: 8,
+  },
+  levelBarFill: {
+    height: '100%',
+    borderRadius: 6,
+  },
+  levelPercent: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.black,
+    minWidth: 35,
+    textAlign: 'right',
+    fontFamily: fontBase(),
   },
   legendRow: { 
     marginTop: 12, 
@@ -662,60 +603,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
     fontFamily: fontBase() 
-  },
-  levelProgressContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 16,
-  },
-  levelItem: {
-    alignItems: 'center',
-  },
-  levelLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.subtext,
-    marginBottom: 8,
-    fontFamily: fontBase(),
-  },
-  levelChart: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  levelPercent: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: COLORS.black,
-    fontFamily: fontHeavy(),
-  },
-  levelFallback: {
-    borderWidth: 12,
-    borderColor: COLORS.grayTrack,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  miniPieFallbackContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  miniPieRingBackground: {
-    position: 'absolute',
-    borderColor: COLORS.grayTrack,
-  },
-  miniPieRingProgress: {
-    position: 'absolute',
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
-  },
-  miniPieInnerCircle: {
-    position: 'absolute',
-    backgroundColor: '#FFFFFF',
-    zIndex: 1,
   },
   dottedBox: {
     height: 240,
